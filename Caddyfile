@@ -1,0 +1,21 @@
+# Caddy fronts Adminer with HTTP basic auth — the real access boundary for the console
+# (the Coolify edge is reachable directly by Host header, bypassing the platform's YARP gate).
+# TLS terminates at the VibeNest edge and YARP proxies to Coolify on :80, so we serve plain
+# :8080 here (auto_https off).
+{
+	admin off
+	auto_https off
+}
+
+:8080 {
+	basic_auth {
+		{$AUTH_USER} {$AUTH_HASH}
+	}
+
+	reverse_proxy 127.0.0.1:9000 {
+		# Adminer sends its own X-Frame-Options/CSP that would block embedding in the dashboard
+		# iframe. Strip them here; the platform's proxy sets the embed-permitting CSP instead.
+		header_down -X-Frame-Options
+		header_down -Content-Security-Policy
+	}
+}

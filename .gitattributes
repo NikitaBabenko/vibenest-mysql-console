@@ -1,0 +1,5 @@
+# Shell + config must stay LF so the container runs them regardless of host OS (authored on Windows).
+*.sh text eol=lf
+Caddyfile text eol=lf
+Dockerfile text eol=lf
+*.php text eol=lf
